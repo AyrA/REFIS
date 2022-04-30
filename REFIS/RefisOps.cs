@@ -77,11 +77,15 @@ namespace REFIS
                 Console.WriteLine("The given index file is empty");
                 return RET.SUCCESS;
             }
-            Console.WriteLine("{0,36} Size Name", "Id");
+            Console.WriteLine("{0,36} Size Name Recoverable", "Id");
             foreach (var Entry in Index.Files)
             {
                 var Master = Entry.Value.GetMasterHeader();
-                Console.WriteLine("{0,36} {1} {2}", Entry.Key, Master.Filesize, Master.Filename);
+                Console.WriteLine("{0,36} {1} {2} {3}",
+                    Entry.Key,
+                    Master.Filesize,
+                    Master.Filename,
+                    Entry.Value.IsComplete() ? 'Y' : 'N');
             }
             return RET.SUCCESS;
         }
