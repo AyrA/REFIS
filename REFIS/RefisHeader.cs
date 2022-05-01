@@ -59,17 +59,52 @@ namespace REFIS
         /// </summary>
         public const int DATA_SIZE = BLOCK_SIZE - SLAVE_HEADER_SIZE;
 
+        /// <summary>
+        /// Gets or sets the file id
+        /// </summary>
         public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the time the file was last changed
+        /// </summary>
         public DateTime ChangeTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the time the file was created
+        /// </summary>
         public DateTime CreateTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the file size
+        /// </summary>
         public long Filesize { get; set; }
+
+        /// <summary>
+        /// Gets or sets the filename
+        /// </summary>
         public string Filename { get; set; }
+
+        /// <summary>
+        /// Gets or sets the header index
+        /// </summary>
         public long Index { get; set; }
+
+        /// <summary>
+        /// Gets if this header is a master header
+        /// </summary>
         [JsonIgnore]
         public bool IsMaster { get => Index == 0; }
+        
+        /// <summary>
+        /// Gets the size of the header
+        /// </summary>
         [JsonIgnore]
         public int HeaderSize { get => IsMaster ? BLOCK_SIZE : SLAVE_HEADER_SIZE; }
 
+        /// <summary>
+        /// Creates an empty instance
+        /// </summary>
+        /// <remarks>This is used to manually assign properties</remarks>
         [JsonConstructor]
         private RefisHeader()
         {
@@ -129,6 +164,10 @@ namespace REFIS
             }
         }
 
+        /// <summary>
+        /// Creates a REFIS header from the given file information
+        /// </summary>
+        /// <param name="FI">file information</param>
         public RefisHeader(FileInfo FI)
         {
             Id = Guid.NewGuid();
@@ -142,6 +181,10 @@ namespace REFIS
             Filesize = FI.Length;
         }
 
+        /// <summary>
+        /// Creates a REFIS header for the given file
+        /// </summary>
+        /// <param name="FileName">File name</param>
         public RefisHeader(string FileName) : this(new FileInfo(FileName))
         {
             if (string.IsNullOrEmpty(FileName))
@@ -154,6 +197,10 @@ namespace REFIS
             }
         }
 
+        /// <summary>
+        /// Creates a REFIS hesder from the given data chunk
+        /// </summary>
+        /// <param name="Data">Data chunk</param>
         public RefisHeader(byte[] Data) : this(new MemoryStream(Data, false))
         {
             if (Data == null)
@@ -166,6 +213,11 @@ namespace REFIS
             }
         }
 
+        /// <summary>
+        /// Reads a REFIS header from the given stream
+        /// </summary>
+        /// <param name="S">Stream</param>
+        /// <remarks>For slave headers, this will not read the file data portion</remarks>
         public RefisHeader(Stream S)
         {
             if (S == null)
@@ -213,6 +265,11 @@ namespace REFIS
             }
         }
 
+        /// <summary>
+        /// Checks if the given bytes represent a valid REFIS header
+        /// </summary>
+        /// <param name="Data">Data</param>
+        /// <returns>true, if valid header</returns>
         public static bool IsHeader(byte[] Data)
         {
             if (Data == null || Data.Length != BLOCK_SIZE)
@@ -231,6 +288,11 @@ namespace REFIS
             return true;
         }
 
+        /// <summary>
+        /// Writes this instance to the given stream
+        /// </summary>
+        /// <param name="S">Stream</param>
+        /// <param name="Index">Header index</param>
         public void Serialize(Stream S, long Index)
         {
             //Hide "IsMaster" member
@@ -294,11 +356,20 @@ namespace REFIS
             }
         }
 
+        /// <summary>
+        /// Writes this instance to the given stream
+        /// </summary>
+        /// <param name="S">Stream</param>
         public void Serialize(Stream S)
         {
             Serialize(S, Index);
         }
 
+        /// <summary>
+        /// Converts this instance into a byte array
+        /// </summary>
+        /// <param name="Index">Header index</param>
+        /// <returns>Serialized header</returns>
         public byte[] Serialize(long Index)
         {
             using (var MS = new MemoryStream())
@@ -308,6 +379,10 @@ namespace REFIS
             }
         }
 
+        /// <summary>
+        /// Converts this instance into a byte array
+        /// </summary>
+        /// <returns>Serialized header</returns>
         public byte[] Serialize()
         {
             return Serialize(Index);
