@@ -10,7 +10,7 @@ namespace UnitTests
     {
         private static readonly string[] Modes = "/E /D /R /S /I /L".Split(' ');
 
-        [TestMethod]
+        [TestMethod("Duplicate arguments")]
         public void DuplicateArgumentsTest()
         {
             //Test duplicate mode args (with case insensitivity)
@@ -22,13 +22,13 @@ namespace UnitTests
             Assert.ThrowsException<ArgumentException>(delegate { new Arguments("/Y", "/y"); }, "Duplicate test");
         }
 
-        [TestMethod]
+        [TestMethod("Missing mode argument")]
         public void NoModeTest()
         {
             Assert.ThrowsException<ArgumentException>(delegate { new Arguments("X", "X"); }, "Missing mode test");
         }
 
-        [TestMethod]
+        [TestMethod("Help requests")]
         public void HelpTest()
         {
             Assert.IsTrue(new Arguments().Mode == OpMode.Help, "Help test");
@@ -36,7 +36,7 @@ namespace UnitTests
             Assert.IsTrue(new Arguments("/?").Mode == OpMode.Help, "Help test");
         }
 
-        [TestMethod]
+        [TestMethod("Not supplying enough arguments")]
         public void NotEnoughArgumentTest()
         {
             //All modes need at least one argument
@@ -46,7 +46,7 @@ namespace UnitTests
             }
         }
 
-        [TestMethod]
+        [TestMethod("Optional arguments are really optional")]
         public void OptionalArgumentTest()
         {
             var Valid = Environment.ExpandEnvironmentVariables("%COMSPEC%");
@@ -55,7 +55,7 @@ namespace UnitTests
             Assert.IsTrue(new Arguments("/R", Valid, Valid, "X").Mode == OpMode.Restore, "Optional outfile argument");
         }
 
-        [TestMethod]
+        [TestMethod("Existing/Absent file name test")]
         public void FileArgTest()
         {
             var Invalid = Path.Combine(Environment.CurrentDirectory, "NUL", "non-existent.bin");
