@@ -9,8 +9,49 @@ but it can be heavily fragmented and will still recover.
 
 ## CAUTION
 
-REFIS is no replacement for a backup.
-REFIS will only recover files if all headers are still intact.
+- REFIS is no replacement for a backup
+- REFIS will only recover files if all headers are still intact
+- REFIS only works on drives with a sector size of 512 (or a multiple of it)
+
+### How REFIS works
+
+REFIS works by exploiting how disks and filesystems generally function.
+
+#### Sector sizes and file systems
+
+Almost all media in use today (harddrives, SSD, flash storage, optical media)
+use a sector size of 512, or a multiple of it.
+File systems combine sectors into so called "allocation units" for better performance.
+For small media, the allocation unit will be a single sector, but for larger disks,
+it may be over 100 sectors. The value can be selected by the user when media is formatted.
+
+#### Fragmentation
+
+Fragmentation in a file system is limited to the allocation unit size.
+Example: An allocation unit of 8 sectors means a file cannot be fragmented more often than every 4 KiB.
+
+A REFIS file consists of 512 byte headers that are concatenated together.
+Because of this, fragmentation will always occur exactly at a header boundary.
+By reading a recovered disk image in 512 byte chunks, REFIS can rediscover headers regardless of fragmentation.
+
+#### Larger chunks
+
+There is nothing that would stop you from making the header as large as an allocation unit.
+In fact, this would reduce the wasted space for the chunks.
+The problem here is that if you copy the file to a media with a smaller allocation unit size,
+REFIS will lose it's ability to recover from fragmentation.
+
+Larger chunks don't make a recovery faster.
+Recovery would still need to be performed with the 512 byte boundary
+because on a corrupted disk image it may no longer be obvious where exactly the file system started,
+meaning it could be misaligned.
+
+Or simply put, the partition of a file system with 8 KiB units could be aligned to a 2 KiB boundary on the disk.
+If you try to detect REFIS headers at an 8 KiB boundary you will not find them now if you're unlucky
+and the 2 KiB alignment doesn't happens to also be an 8 KiB alignment by chance.
+
+Note: This application makes heavy usage from constants in the `RefisHeader` class.
+This is the location where you want to modify the header size if you feel like setting things on fire.
 
 ## Usage
 
