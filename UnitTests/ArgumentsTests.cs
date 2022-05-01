@@ -23,6 +23,12 @@ namespace UnitTests
         }
 
         [TestMethod]
+        public void NoModeTest()
+        {
+            Assert.ThrowsException<ArgumentException>(delegate { new Arguments("X", "X"); }, "Missing mode test");
+        }
+
+        [TestMethod]
         public void HelpTest()
         {
             Assert.IsTrue(new Arguments().Mode == OpMode.Help, "Help test");
