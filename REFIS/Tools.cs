@@ -8,5 +8,10 @@ namespace REFIS
         {
             return File.ReadAllText(Filename).FromJson<RefisIndex>();
         }
+
+        public static Stream CreateFile(string Name, bool Overwrite)
+        {
+            return File.Open(Name, Overwrite ? FileMode.Create : FileMode.CreateNew, FileAccess.Write, FileShare.None);
+        }
     }
 }

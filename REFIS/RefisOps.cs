@@ -5,8 +5,18 @@ using System.Text;
 
 namespace REFIS
 {
+    /// <summary>
+    /// Provides easy access to common REFIS operations
+    /// </summary>
     public static class RefisOps
     {
+        /// <summary>
+        /// Encodes a file into REFIS format
+        /// </summary>
+        /// <param name="Source">File name</param>
+        /// <param name="Dest">REFIS file name</param>
+        /// <param name="Overwrite">Permit overwriting of <paramref name="Dest"/></param>
+        /// <returns>Code from <see cref="RET"/></returns>
         public static int CmdEncode(string Source, string Dest, bool Overwrite)
         {
             if (Source is null)
@@ -25,7 +35,7 @@ namespace REFIS
             }
             using (var FSin = File.OpenRead(Source))
             {
-                using (var FSout = Create(Dest, Overwrite))
+                using (var FSout = Tools.CreateFile(Dest, Overwrite))
                 {
                     var Header = new RefisHeader(Source);
                     byte[] Buffer = new byte[RefisHeader.DATA_SIZE];
@@ -51,6 +61,11 @@ namespace REFIS
             return RET.SUCCESS;
         }
 
+        /// <summary>
+        /// Lists all files from an index file
+        /// </summary>
+        /// <param name="IndexFile">Index file</param>
+        /// <returns>Code from <see cref="RET"/></returns>
         public static int CmdList(string IndexFile)
         {
             if (IndexFile is null)
@@ -90,6 +105,13 @@ namespace REFIS
             return RET.SUCCESS;
         }
 
+        /// <summary>
+        /// Decodes a REFIS file
+        /// </summary>
+        /// <param name="Source">REFIS file</param>
+        /// <param name="Dest">Decoded file name (optional, can be null or directory)</param>
+        /// <param name="Overwrite">Permit overwriting of <paramref name="Dest"/></param>
+        /// <returns>Code from <see cref="RET"/></returns>
         public static int CmdDecode(string Source, string Dest, bool Overwrite)
         {
             if (Source is null)
@@ -122,7 +144,7 @@ namespace REFIS
                     return RET.EXISTS;
                 }
 
-                using (var FSout = Create(Dest, Overwrite))
+                using (var FSout = Tools.CreateFile(Dest, Overwrite))
                 {
                     long ByteCount = 0;
                     long ExpectedIndex = 1;
@@ -172,6 +194,11 @@ namespace REFIS
             return RET.SUCCESS;
         }
 
+        /// <summary>
+        /// Lists information of a single REFIS file
+        /// </summary>
+        /// <param name="Source">REFIS file</param>
+        /// <returns>Code from <see cref="RET"/></returns>
         public static int CmdInfo(string Source)
         {
             if (Source is null)
@@ -214,6 +241,13 @@ Master.ChangeTime);
             }
         }
 
+        /// <summary>
+        /// Scans a dump file for REFIS chunks and writes metadata for recovery into an index file.
+        /// </summary>
+        /// <param name="Source">Dump file</param>
+        /// <param name="IndexFile">Index file</param>
+        /// <param name="Overwrite">Permit overwriting of <paramref name="IndexFile"/></param>
+        /// <returns>Code from <see cref="RET"/></returns>
         public static int CmdScan(string Source, string IndexFile, bool Overwrite)
         {
             if (Source is null)
@@ -228,7 +262,7 @@ Master.ChangeTime);
 
             using (var FSin = File.OpenRead(Source))
             {
-                using (var FSout = Create(IndexFile, Overwrite))
+                using (var FSout = Tools.CreateFile(IndexFile, Overwrite))
                 {
                     var HeaderIndex = CreateIndex(FSin);
                     byte[] Data = Encoding.UTF8.GetBytes(HeaderIndex.ToJson());
@@ -238,6 +272,15 @@ Master.ChangeTime);
             return RET.SUCCESS;
         }
 
+        /// <summary>
+        /// Restores a REFIS file from a data dump such as a raw disk image.
+        /// </summary>
+        /// <param name="Source">Dump file with REFIS headers</param>
+        /// <param name="IndexFile">Index file created previously</param>
+        /// <param name="Id">Id of file to recover</param>
+        /// <param name="Dest">Decoded file name (optional, can be null or directory)</param>
+        /// <param name="Overwrite">Permit overwriting of <paramref name="Dest"/></param>
+        /// <returns>Code from <see cref="RET"/></returns>
         public static int CmdRestore(string Source, string IndexFile, Guid Id, string Dest, bool Overwrite)
         {
             if (Source is null)
@@ -293,7 +336,7 @@ Master.ChangeTime);
 
             using (var FSin = File.OpenRead(Source))
             {
-                using (var FSout = Create(Dest, Overwrite))
+                using (var FSout = Tools.CreateFile(Dest, Overwrite))
                 {
                     long Bytes = 0;
                     byte[] Data = new byte[RefisHeader.DATA_SIZE];
@@ -311,6 +354,11 @@ Master.ChangeTime);
             return RET.SUCCESS;
         }
 
+        /// <summary>
+        /// Creates an index of a dump
+        /// </summary>
+        /// <param name="Source">Stream with data dump</param>
+        /// <returns>Index</returns>
         public static RefisIndex CreateIndex(Stream Source)
         {
             int Read;
@@ -328,11 +376,6 @@ Master.ChangeTime);
                 }
             } while (Read > 0);
             return HeaderIndex;
-        }
-
-        private static Stream Create(string Name, bool Overwrite)
-        {
-            return File.Open(Name, Overwrite ? FileMode.Create : FileMode.CreateNew, FileAccess.Write, FileShare.None);
         }
     }
 }
