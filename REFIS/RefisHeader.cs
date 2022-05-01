@@ -8,7 +8,7 @@ using System.Text;
 namespace REFIS
 {
     /// <summary>
-    /// Represents the first 512 byte header
+    /// Represents a REFIS header
     /// </summary>
     public class RefisHeader
     {
