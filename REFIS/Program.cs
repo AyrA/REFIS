@@ -3,8 +3,16 @@ using System.IO;
 
 namespace REFIS
 {
+    /// <summary>
+    /// Main entry point
+    /// </summary>
     class Program
     {
+        /// <summary>
+        /// Main function
+        /// </summary>
+        /// <param name="args">Command line arguments</param>
+        /// <returns>Exit code</returns>
         static int Main(string[] args)
         {
             Arguments A;
@@ -57,6 +65,11 @@ namespace REFIS
             return Ret;
         }
 
+        /// <summary>
+        /// Handles restore operation
+        /// </summary>
+        /// <param name="Args">Processed arguments</param>
+        /// <returns>Exit code</returns>
         private static int Restore(Arguments Args)
         {
             if (Args == null)
@@ -79,6 +92,10 @@ namespace REFIS
                 Args.Overwrite);
         }
 
+        /// <summary>
+        /// Displays command line help
+        /// </summary>
+        /// <returns><see cref="RET.SUCCESS"/></returns>
         private static int Help()
         {
             Console.WriteLine(@"REFIS - Resillient File Storage
@@ -101,9 +118,10 @@ Modes:
 and restored to the current working directory. If 'outfile' is a directory,
 the file name will be appended to it.
 
-
 Switches:
-/Y  - Overwrite destination");
+/Y  - Overwrite destination
+
+See https://github.com/AyrA/REFIS for details");
             return RET.SUCCESS;
         }
     }
