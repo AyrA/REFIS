@@ -10,7 +10,7 @@ namespace UnitTests
     {
         private static readonly string[] Modes = "/E /D /R /S /I /L".Split(' ');
 
-        [TestMethod("Duplicate arguments")]
+        [TestMethod("Reject duplicate arguments")]
         public void DuplicateArgumentsTest()
         {
             //Test duplicate mode args (with case insensitivity)
@@ -22,13 +22,13 @@ namespace UnitTests
             Assert.ThrowsException<ArgumentException>(delegate { new Arguments("/Y", "/y"); }, "Duplicate test");
         }
 
-        [TestMethod("Missing mode argument")]
+        [TestMethod("Abort on missing mode argument")]
         public void NoModeTest()
         {
             Assert.ThrowsException<ArgumentException>(delegate { new Arguments("X", "X"); }, "Missing mode test");
         }
 
-        [TestMethod("Help requests")]
+        [TestMethod("Handle help requests")]
         public void HelpTest()
         {
             Assert.IsTrue(new Arguments().Mode == OpMode.Help, "Help test");
@@ -36,7 +36,7 @@ namespace UnitTests
             Assert.IsTrue(new Arguments("/?").Mode == OpMode.Help, "Help test");
         }
 
-        [TestMethod("Not supplying enough arguments")]
+        [TestMethod("Reject too low argument count")]
         public void NotEnoughArgumentTest()
         {
             //All modes need at least one argument
@@ -46,7 +46,7 @@ namespace UnitTests
             }
         }
 
-        [TestMethod("Optional arguments are really optional")]
+        [TestMethod("Check that optional arguments are really optional")]
         public void OptionalArgumentTest()
         {
             var Valid = Environment.ExpandEnvironmentVariables("%COMSPEC%");
@@ -55,10 +55,12 @@ namespace UnitTests
             Assert.IsTrue(new Arguments("/R", Valid, Valid, "X").Mode == OpMode.Restore, "Optional outfile argument");
         }
 
-        [TestMethod("Existing/Absent file name test")]
+        [TestMethod("Reject on argument that specifies missing file")]
         public void FileArgTest()
         {
+            //This cannot exist because NUL is invalid in standard file name space.
             var Invalid = Path.Combine(Environment.CurrentDirectory, "NUL", "non-existent.bin");
+            //Command processor is a file that exists.
             var Valid = Environment.ExpandEnvironmentVariables("%COMSPEC%");
             //E,D,I,S,L: First argument must exist
             //R        : First and second argument must exist

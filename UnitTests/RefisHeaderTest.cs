@@ -14,7 +14,7 @@ namespace UnitTests
             FilePrepare.Cleanup();
         }
 
-        [TestMethod("Header detected in all refis files and no source files")]
+        [TestMethod("Header scanning actually finds headers in valid files")]
         public void TestHeaderDetection()
         {
             var Root = FilePrepare.Prepare();
@@ -40,7 +40,7 @@ namespace UnitTests
             }
         }
 
-        [TestMethod("Decoded data is identical to source data")]
+        [TestMethod("Verify that decoded data is identical to source data")]
         public void TestHeaderDecoder()
         {
             var Root = FilePrepare.Prepare();

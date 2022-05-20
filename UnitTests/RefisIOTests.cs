@@ -41,7 +41,7 @@ namespace UnitTests
             TempFiles.Clear();
         }
 
-        [TestMethod("Handling of the boolean 'Overwrite' argument")]
+        [TestMethod("Boolean 'Overwrite' argument is respected properly")]
         public void TestOverwrite()
         {
             var Root = FilePrepare.Prepare();
@@ -50,14 +50,14 @@ namespace UnitTests
             Assert.IsTrue(REFIS.RefisOps.CmdEncode(Name, Name + ".refis", true) == REFIS.RET.SUCCESS, "Overwrite test: Allow overwrite");
         }
 
-        [TestMethod("Info command returns success")]
+        [TestMethod("'Info' command returns success")]
         public void TestInfo()
         {
             var Name = Path.Combine(FilePrepare.Prepare(), FilePrepare.FileNames.BIG);
             Assert.IsTrue(REFIS.RefisOps.CmdInfo(Name) == REFIS.RET.SUCCESS, "Returns {0}", REFIS.RET.SUCCESS);
         }
 
-        [TestMethod("Scan command works and returns success")]
+        [TestMethod("'Scan' command works and returns success")]
         public void TestScan()
         {
             var Root = FilePrepare.Prepare();
@@ -81,7 +81,7 @@ namespace UnitTests
             CreateIndex(Root);
         }
 
-        [TestMethod("Restore command works and returns success")]
+        [TestMethod("'Restore' command works and returns success")]
         public void TestRestore()
         {
             var Root = FilePrepare.Prepare();
@@ -99,7 +99,7 @@ namespace UnitTests
             }
         }
 
-        [TestMethod("Index command works and returns success")]
+        [TestMethod("'Index' command works and returns success")]
         public void TestIndex()
         {
             CreateIndex(FilePrepare.Prepare());
@@ -107,7 +107,7 @@ namespace UnitTests
             Assert.IsTrue(REFIS.RefisOps.CmdList(JsonRandom) == REFIS.RET.SUCCESS, "Reading random index");
         }
 
-        [TestMethod("GetAllHeaders() returns entries in order")]
+        [TestMethod("GetAllHeaders() returns entries in ascending order")]
         public void TestIndexOrder()
         {
             CreateIndex(FilePrepare.Prepare());
